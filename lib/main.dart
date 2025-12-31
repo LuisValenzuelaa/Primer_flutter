@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen>{
   String mensajeDia = 'Stay Hard';
   String nombre = '';
   bool estaCargando = true;
-  final List<String> variaciones = ['Even today', 'You will', 'You can', 'Always', 'Friend, ', 'Time to', ''];
+  final List<String> variaciones = ['Even today', 'You will', 'You can', 'Always', 'Buddy,', 'Time to', ''];
   @override
   void initState(){
     super.initState();
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen>{
     }
     setState(() {
       mensajeDia = '$prefijo Stay Hard';
-      estaCargando = true;
+      estaCargando = false;
       nombre = prefs.getString('nombre_del_usuario') ?? '';
     });
   }
@@ -82,6 +82,14 @@ class _HomeScreenState extends State<HomeScreen>{
             }
           },
         ),
+        title: Text(
+          'Go to menu',
+          style: TextStyle(
+            fontFamily: 'BBHBOGLE',
+            fontSize: 28,
+          ),
+        ),
+        centerTitle: false,
       ),
       body: Center(
         child: Column(
@@ -121,13 +129,34 @@ class MenuScreen extends StatefulWidget{
 class _MenuScreenState extends State<MenuScreen>{
   final TextEditingController controlador = TextEditingController();
   late SharedPreferences prefs;
+  String? valorSeleccionado = '1 minute';
+  final List<String> opciones = ['1 minute', '5 minutes', '30 minutes', '1 hour', '1 day'];
+  final Map<String, int> mapaMinutos = {
+    '1 minute': 1,
+    '5 minutes': 5,
+    '30 minutes': 30,
+    '1 hour': 60,
+    '1 day': 1440,
+  };
   @override
   void initState(){
     super.initState();
     _initPrefs();
+    _cargarNombrePorDefecto();
+  }
+  Future<void> _cargarNombrePorDefecto() async{
+    final prefs = await SharedPreferences.getInstance();
+    String nombreGuardado = prefs.getString('nombre_del_usuario') ?? '';
+    controlador.text = nombreGuardado;
   }
   Future<void> _initPrefs() async {
     prefs = await SharedPreferences.getInstance();
+    String? guardado = prefs.getString('intervalo_texto');
+    if (guardado != null && opciones.contains(guardado)){
+      setState(() {
+        valorSeleccionado = guardado;
+      });
+    }
   }
   @override
   Widget build(BuildContext context){
@@ -138,7 +167,7 @@ class _MenuScreenState extends State<MenuScreen>{
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          'Menu',
+          'Back to home',
           style: TextStyle(
             fontFamily: 'BBHBOGLE',
             fontSize: 28,
@@ -146,22 +175,27 @@ class _MenuScreenState extends State<MenuScreen>{
           ),
         ),
       ),
-      body: Center(
+      body: Padding(
+        padding: EdgeInsetsGeometry.symmetric(horizontal: 30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               width: 300,
-              height: 60,
-                child: TextField(
+              child: TextField(
                 style: TextStyle(
                   fontFamily: 'BBHBOGLE',
                   fontSize: 17,
-                  color: Colors.white,
+                  color: Colors.white, 
                 ),
                 controller: controlador,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Write your name',
+                  labelStyle: TextStyle(
+                    fontFamily: 'BBHBOGLE',
+                    fontSize: 17,
+                    color: Colors.grey,
+                  ),
                   border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
                   ),
@@ -169,36 +203,81 @@ class _MenuScreenState extends State<MenuScreen>{
                     borderSide: BorderSide(color: Colors.white),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)
+                    borderSide: BorderSide(color: Colors.white, width: 2),
                   ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+                ),
+              ),
+            ),
+            SizedBox(height: 30),
+            SizedBox(
+              width: 300,
+              child: DropdownButtonFormField<String>(
+                initialValue: valorSeleccionado,
+                decoration: InputDecoration(
+                  labelText: 'Interval of reminder',
                   labelStyle: TextStyle(
                     fontFamily: 'BBHBOGLE',
                     fontSize: 17,
                     color: Colors.grey,
-                  )
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white, width: 2),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                 ),
-              ),
+                dropdownColor: Colors.grey[900],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'BBHBOGLE',
+                  fontSize: 17,
+                ),
+                icon: Icon(Icons.arrow_drop_down, color: Colors.white,),
+                items: opciones.map((String opcion){
+                  return DropdownMenuItem<String>(
+                    value: opcion,
+                    child: Text(opcion),
+                  );
+              }).toList(),
+              onChanged: (String? nuevoValor){
+                setState(() {
+                  valorSeleccionado = nuevoValor;
+                });
+              },
             ),
-            const SizedBox(height: 20),
+            ),
+            SizedBox(height: 40,),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
-                side: BorderSide(color: Colors.white,),
+                side: BorderSide(color: Colors.white),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 textStyle: TextStyle(
                   fontFamily: 'BBHBOGLE',
                   fontSize: 20,
                 ),
               ),
               onPressed: () async{
-                await prefs.setString('nombre_del_usuario', controlador.text);
-                Navigator.pop(context, true);
+                 await prefs.setString('nombre_del_usuario', controlador.text);
+                 if(valorSeleccionado != null){
+                  int minutos = mapaMinutos[valorSeleccionado] ?? 1;
+                  await prefs.setInt('intervalo_minutos', minutos);
+                  await prefs.setString('intervalo_texto', valorSeleccionado!);
+                 }
+                 Navigator.pop(context, true);
               },
-              child: const Text('Save'),
+              child: Text('Save'),
             )
           ],
-        ),
-      ),
+        ) 
+        ) 
     );
   }
   @override
