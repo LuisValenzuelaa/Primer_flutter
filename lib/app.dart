@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:namer_app/screens/settings_screen.dart';
 import 'screens/home_screen.dart';
 
 class MyApp extends StatelessWidget{
@@ -6,12 +7,17 @@ class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomeScreen(),
+        '/settings': (context) =>const SettingsScreen(),
+      },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red, brightness: Brightness.dark),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+     // home: const HomeScreen(),
     );
   }
 }

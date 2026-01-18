@@ -3,8 +3,11 @@ import 'package:namer_app/widgets/random_phrase.dart';
 
 class HomeScreen extends StatelessWidget{
   const HomeScreen({super.key});
+  
   @override
   Widget build(BuildContext context){
+    final String? texto = ModalRoute.of(context)?.settings.arguments as String?;
+    final String frase = Phrase.fraseAleatoria; 
     return Scaffold(
       appBar: AppBar(
         
@@ -13,33 +16,26 @@ class HomeScreen extends StatelessWidget{
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.deepPurple),
-            child: Text(
-              'Menu',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
+            const SizedBox(height: 150,),
           ListTile(
             leading: const Icon(Icons.home),
-            title: const Text('Inicio'),
+            title: const Text('Home', style: TextStyle(fontFamily: 'BBHBOGLE'),),
             onTap: (){
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Inicio')),
+              Navigator.pushNamed(context, '/');
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Home selected.', style: TextStyle(fontFamily: 'BBHBOGLE'),),)
               );
             },
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: const Text('Configuración'),
+            title: const Text('Settings', style: TextStyle(fontFamily: 'BBHBOGLE'),),
             onTap: (){
               Navigator.pop(context);
+              Navigator.pushNamed(context, '/settings');
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Configuración seleccionada'),)
+                const SnackBar(content: Text('Settings selected.', style: TextStyle(fontFamily: 'BBHBOGLE'),),)
               );
             },
           )
@@ -47,10 +43,10 @@ class HomeScreen extends StatelessWidget{
         ),
       ),
       body: Center(
-        child: Padding(padding: const EdgeInsets.all(20.0),
+        child: Padding(padding: const EdgeInsets.all(25.0),
         child: Text(
-          Phrase.fraseAleatoria,
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          '$frase $texto',
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'BBHBOGLE', letterSpacing: 3),
           textAlign: TextAlign.center,
         ),),
       ),
