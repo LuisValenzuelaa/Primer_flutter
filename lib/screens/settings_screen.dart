@@ -31,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/');
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: const Text('Home selected..', style: TextStyle(fontFamily: 'BBHBOGLE'),))
+                  const SnackBar(content: Text('Home selected..', style: TextStyle(fontFamily: 'BBHBOGLE'),))
                 );
               },
             ),
@@ -42,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/settings');
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: const Text('Settings selected.', style: TextStyle(fontFamily: 'BBHBOGLE')),)
+                  const SnackBar(content: Text('Settings selected.', style: TextStyle(fontFamily: 'BBHBOGLE')),)
                 );
               }
             )
@@ -50,6 +50,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(child: Padding(padding: const EdgeInsets.all(80), 
           child: TextField(
